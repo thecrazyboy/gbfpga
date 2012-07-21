@@ -1,0 +1,5 @@
+#!/bin/sh
+
+c:/altera/72sp2/quartus//bin/perl/bin/perl -I$sopc_builder/bin -I$sopc_builder/bin/perl_lib -I$sopc_builder/bin/europa $sopc_builder/bin/ptf_update.pl sys_gbfpga.ptf 
+
+c:/altera/72sp2/quartus//bin/perl/bin/perl -I$sopc_builder/bin -I$sopc_builder/bin/perl_lib -I$sopc_builder/bin/europa $sopc_builder/bin/mk_systembus.pl --sopc_directory=$sopc_builder --sopc_perl=c:/altera/72sp2/quartus//bin/perl --sopc_lib_path="E:/dev/gbfpga+C:/altera/72/ip/sopc_builder_ip+C:/altera/72/ip/nios2_ip+c:/altera/72sp2/quartus/sopc_builder/components" --target_module_name=sys_gbfpga --system_directory=E:/dev/gbfpga --system_name=sys_gbfpga --project_name=gbfpga.quartus --sopc_quartus_dir= $1
