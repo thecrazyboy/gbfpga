@@ -85,6 +85,10 @@ ACDS_VERSION := 12.0
 # used to generate this makefile. 
 # BUILD_NUMBER: 178
 
+# Quartus Generated JDI File. Required for resolving node instance ID's with 
+# design component names. 
+JDI_FILE := $(ABS_BSP_ROOT_DIR)/../../gbfpga.jdi
+
 # Qsys--generated SOPCINFO file. Required for resolving node instance ID's with 
 # design component names. 
 SOPCINFO_FILE := $(ABS_BSP_ROOT_DIR)/../../sys.sopcinfo
