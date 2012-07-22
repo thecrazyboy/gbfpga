@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <iostream>
+#include <ctime>
 
 #include "system.h"
 #include "io.h"
@@ -831,12 +832,16 @@ namespace Video
     u16 GetTile(const u8 tile, const u8 yofs, const u8* vramdata)
     {
         u16 tiledata = (tile << 4) + (yofs << 1);
-        u8 datah = vramdata[tiledata]; u8 datal = vramdata[tiledata + 1];
+        /*u8 datah = vramdata[tiledata]; u8 datal = vramdata[tiledata + 1];
         u16 data = ((datal & 0x01) << 14)| ((datah & 0x01) << 15)| ((datal & 0x02) << 11)| ((datah & 0x02) << 12)|
                    ((datal & 0x04) << 8) | ((datah & 0x04) << 9) | ((datal & 0x08) << 5) | ((datah & 0x08) << 6) |
                    ((datal & 0x10) << 2) | ((datah & 0x10) << 3) | ((datal & 0x20) >> 1) | ((datah & 0x20)     ) |
                    ((datal & 0x40) >> 4) | ((datah & 0x40) >> 3) | ((datal & 0x80) >> 7) | ((datah & 0x80) >> 6);
-        data = ((data & 0x5555) << 1) | ((data & 0xaaaa) >> 1);
+        data = ((data & 0x5555) << 1) | ((data & 0xaaaa) >> 1);*/
+
+		u16 data = *((u16*)(&vramdata[tiledata]));
+		data = ALT_CI_GBACC_0(data);
+
         return data;
     }
 
@@ -951,7 +956,7 @@ namespace Video
         {
             u8 t = 3 - line[8 + x];
             //*p = (0x5555 * t);
-            u16 p = (0x5555 * t);
+            u16 p = (0x294a * t);
             //++p;
             IOWR_16DIRECT(SRAM_0_BASE, o, p);
             o+=2;
@@ -1240,7 +1245,33 @@ namespace IO
     {
     	u8 nespad;
     	nespad = IORD_8DIRECT(NESPAD_0_BASE, 0);
-    	IOWR_16DIRECT(SEG7_LUT_4_0_BASE, 0, nespad);
+
+    	static clock_t starttime = 0;
+    	static int framecount = 0;
+
+    	if (starttime == 0)
+    	{
+    		starttime = clock();
+    		framecount = 0;
+    	}
+    	else
+    	{
+    		framecount++;
+    		if (framecount == 60)
+    		{
+    			framecount = 0;
+    			clock_t diff = clock() - starttime;
+    			starttime = clock();
+    			if (diff > 0)
+    			{
+    				int fps = 60 * CLOCKS_PER_SEC / diff;
+    				int fpsdec = (fps % 10) + (fps / 10) * 16;
+    				IOWR_16DIRECT(SEG7_LUT_4_0_BASE, 0, fpsdec);
+    			}
+    		}
+    	}
+
+    	//IOWR_16DIRECT(SEG7_LUT_4_0_BASE, 0, nespad);
     	/* TODO keys
         SDL_Event event;
         while (SDL_PollEvent( &event ))
@@ -1282,6 +1313,8 @@ namespace IO
 int main(int argc, char* argv[])
 {
     const char* games2[] = {
+    		//"Legend of Zelda, The - Link's Awakening (Canada).gb",
+    		//"Tetris Attack (USA) (SGB Enhanced).gb",
         "ASTEROID.gb",
     };
 

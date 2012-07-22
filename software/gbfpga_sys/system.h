@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_qsys_0' in SOPC Builder design 'sys'
  * SOPC Builder design path: ../../sys.sopcinfo
  *
- * Generated: Fri Jul 20 22:51:55 EDT 2012
+ * Generated: Sat Jul 21 08:44:31 EDT 2012
  */
 
 /*
@@ -137,6 +137,15 @@
 
 
 /*
+ * Custom instruction macros
+ *
+ */
+
+#define ALT_CI_GBACC_0(A) __builtin_custom_ini(ALT_CI_GBACC_0_N,(A))
+#define ALT_CI_GBACC_0_N 0x0
+
+
+/*
  * Define for each module class mastered by the CPU
  *
  */
@@ -147,6 +156,7 @@
 #define __ALTERA_AVALON_TIMER
 #define __ALTERA_NIOS2_QSYS
 #define __AVSDC
+#define __GBACC
 #define __SEG7_LUT_4
 #define __SRAM
 
