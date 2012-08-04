@@ -19,6 +19,18 @@ const int zoom = 4;
 bool bRestart = false;
 int iGame = 0; int iGameMax;
 
+// NIOD II Accelerators
+#define PACK16(A)		ALT_CI_GBACC_0(0,A)
+#define RESET_DIV()		ALT_CI_GBACC_0(1,0)
+#define GET_DIV()			ALT_CI_GBACC_0(2,0)
+#define IO_TICK()			ALT_CI_GBACC_0(3,0)
+#define GET_IF(A)		ALT_CI_GBACC_0(4,A)
+#define SET_IF(A)       ALT_CI_GBACC_0(5,A)
+#define SET_TMA(A)		ALT_CI_GBACC_0(6,A)
+#define SET_TAC(A)		ALT_CI_GBACC_0(7,A)
+#define GET_TIMA()		ALT_CI_GBACC_0(8,0)
+#define SET_TIMA(A)		ALT_CI_GBACC_0(9,A)
+
 namespace Video {
     void mliner(u8* linebuf);}
 
@@ -708,35 +720,43 @@ namespace CPU
                 //}
             }
 
-            if (bEIDelay){bEIDelay = false;} else
-            if (IF.value & IE.value & 0x1f)
+            if (bEIDelay)
             {
-                bHalt = false;
-                if (IME) {
-                    u8 Ivector;
-                    if (IF.vblank & IE.vblank) {
-                        IF.vblank = 0;
-                        Ivector = 0x40;
-                    }
-                    else if (IF.lcdstat & IE.lcdstat) {
-                        IF.lcdstat = 0;
-                        Ivector = 0x48;
-                    }
-                    else if (IF.timer & IE.timer) {
-                        IF.timer = 0;
-                        Ivector = 0x50;
-                    }
-                    else if (IF.serial & IE.serial) {
-                        IF.serial = 0;
-                        Ivector = 0x58;
-                    }
-                    else {
-                        IF.joypad = 0;
-                        Ivector = 0x60;
-                    }
-                    IME = false;
-                    PUSH16(R.PC); R.PC = Ivector;
-                }
+            	bEIDelay = false;
+            }
+            else
+            {
+            	IF.value = GET_IF(IF.value);
+				if (IF.value & IE.value & 0x1f)
+				{
+					bHalt = false;
+					if (IME) {
+						u8 Ivector;
+						if (IF.vblank & IE.vblank) {
+							IF.vblank = 0;
+							Ivector = 0x40;
+						}
+						else if (IF.lcdstat & IE.lcdstat) {
+							IF.lcdstat = 0;
+							Ivector = 0x48;
+						}
+						else if (IF.timer & IE.timer) {
+							IF.timer = 0;
+							Ivector = 0x50;
+						}
+						else if (IF.serial & IE.serial) {
+							IF.serial = 0;
+							Ivector = 0x58;
+						}
+						else {
+							IF.joypad = 0;
+							Ivector = 0x60;
+						}
+						SET_IF(IF.value);
+						IME = false;
+						PUSH16(R.PC); R.PC = Ivector;
+					}
+				}
             }
         }
     }
@@ -840,7 +860,7 @@ namespace Video
         data = ((data & 0x5555) << 1) | ((data & 0xaaaa) >> 1);*/
 
 		u16 data = *((u16*)(&vramdata[tiledata]));
-		data = ALT_CI_GBACC_0(data);
+		data = PACK16(data);
 
         return data;
     }
@@ -1134,27 +1154,33 @@ namespace IO
 
     void Init()
     {
-        Divider.value = 0;
-        Timer.value = 0;
-        TMA = 0;
-        TAC = 0;
-        TimerInc = 1;
-        P1 = 0x0f;
+        //Divider.value = 0;
+        //Timer.value = 0;
+        //TMA = 0;
+        //TAC = 0;
+        //TimerInc = 1;
+        RESET_DIV();
+        SET_TMA(0);
+        SET_TIMA(0);
+        SET_TAC(0);
+    	P1 = 0x0f;
         Keys.value = 0xff;
     }
 
     void tick()
     {
-        Divider.DIV += 4;
-
+        //Divider.value += 4;
+    	IO_TICK();
+/*
         if (TAC & 4) {
             Timer.value += TimerInc;
             if (Timer.overflow) {
                 Timer.overflow = 0;
                 Timer.TIMA = TMA;
                 CPU::IF.timer = 1;
+                SET_IF(CPU::IF.value);
             }
-        }
+        }*/
     }
 
     u8 MakeP1()
@@ -1184,11 +1210,15 @@ namespace IO
             switch (addr)
             {
             case 0x00 : if (write) P1 = v; else return MakeP1(); break;
-            case 0x04 : if (write) Divider.value = 0; else return Divider.DIV; break;
-            case 0x05 : if (write) Timer.TIMA = v; else return Timer.TIMA; break;
-            STD_REG(0x06, TMA);
-            case 0x07 : if (write) SetTAC(v); else return TAC; break;
-            STD_REG(0x0f, CPU::IF.value);
+            //case 0x04 : if (write) Divider.value = 0; else return Divider.DIV; break;
+            case 0x04 : if (write) RESET_DIV(); else return GET_DIV(); break;
+            //case 0x05 : if (write) Timer.TIMA = v; else return Timer.TIMA; break;
+            //STD_REG(0x06, TMA);
+            //case 0x07 : if (write) SetTAC(v); else return TAC; break;
+            case 0x05: if (write) SET_TIMA(v); else return GET_TIMA(); break;
+            case 0x06: if (write) {TMA = v; SET_TMA(v);} else return TMA; break;
+            case 0x07: if (write) {TAC = v; SET_TAC(v);} else return TAC; break;
+            case 0x0f : if (write) CPU::IF.value = SET_IF(v); else return GET_IF(CPU::IF.value); break;
             STD_REG(0x10, NR10);
             STD_REG(0x11, NR11);
             STD_REG(0x12, NR12);
@@ -1341,7 +1371,7 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
+/*
 void PACK16(u16& A)
 {
     union { struct {

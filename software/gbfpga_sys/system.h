@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_qsys_0' in SOPC Builder design 'sys'
  * SOPC Builder design path: ../../sys.sopcinfo
  *
- * Generated: Sat Jul 21 08:44:31 EDT 2012
+ * Generated: Sat Aug 04 07:40:10 EDT 2012
  */
 
 /*
@@ -77,7 +77,7 @@
 #define ALT_CPU_ARCHITECTURE "altera_nios2_qsys"
 #define ALT_CPU_BIG_ENDIAN 0
 #define ALT_CPU_BREAK_ADDR 0x1080820
-#define ALT_CPU_CPU_FREQ 100000000u
+#define ALT_CPU_CPU_FREQ 50000000u
 #define ALT_CPU_CPU_ID_SIZE 1
 #define ALT_CPU_CPU_ID_VALUE 0x00000000
 #define ALT_CPU_CPU_IMPLEMENTATION "fast"
@@ -87,7 +87,7 @@
 #define ALT_CPU_DCACHE_SIZE 4096
 #define ALT_CPU_EXCEPTION_ADDR 0x800020
 #define ALT_CPU_FLUSHDA_SUPPORTED
-#define ALT_CPU_FREQ 100000000
+#define ALT_CPU_FREQ 50000000
 #define ALT_CPU_HARDWARE_DIVIDE_PRESENT 0
 #define ALT_CPU_HARDWARE_MULTIPLY_PRESENT 1
 #define ALT_CPU_HARDWARE_MULX_PRESENT 0
@@ -111,7 +111,7 @@
 
 #define NIOS2_BIG_ENDIAN 0
 #define NIOS2_BREAK_ADDR 0x1080820
-#define NIOS2_CPU_FREQ 100000000u
+#define NIOS2_CPU_FREQ 50000000u
 #define NIOS2_CPU_ID_SIZE 1
 #define NIOS2_CPU_ID_VALUE 0x00000000
 #define NIOS2_CPU_IMPLEMENTATION "fast"
@@ -141,8 +141,9 @@
  *
  */
 
-#define ALT_CI_GBACC_0(A) __builtin_custom_ini(ALT_CI_GBACC_0_N,(A))
+#define ALT_CI_GBACC_0(n,A) __builtin_custom_ini(ALT_CI_GBACC_0_N+(n&ALT_CI_GBACC_0_N_MASK),(A))
 #define ALT_CI_GBACC_0_N 0x0
+#define ALT_CI_GBACC_0_N_MASK ((1<<4)-1)
 
 
 /*
@@ -267,7 +268,7 @@
 #define NESPAD_0_DO_TEST_BENCH_WIRING 0
 #define NESPAD_0_DRIVEN_SIM_VALUE 0x0
 #define NESPAD_0_EDGE_TYPE "NONE"
-#define NESPAD_0_FREQ 100000000u
+#define NESPAD_0_FREQ 50000000u
 #define NESPAD_0_HAS_IN 1
 #define NESPAD_0_HAS_OUT 0
 #define NESPAD_0_HAS_TRI 0
@@ -329,10 +330,10 @@
 #define TIMER_0_BASE 0x1081000
 #define TIMER_0_COUNTER_SIZE 32
 #define TIMER_0_FIXED_PERIOD 0
-#define TIMER_0_FREQ 100000000u
+#define TIMER_0_FREQ 50000000u
 #define TIMER_0_IRQ 1
 #define TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID 0
-#define TIMER_0_LOAD_VALUE 99999ull
+#define TIMER_0_LOAD_VALUE 49999ull
 #define TIMER_0_MULT 0.0010
 #define TIMER_0_NAME "/dev/timer_0"
 #define TIMER_0_PERIOD 1
